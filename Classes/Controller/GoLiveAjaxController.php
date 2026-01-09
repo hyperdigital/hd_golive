@@ -27,6 +27,9 @@ final class GoLiveAjaxController
 
     public function togglePage(ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->canViewChecklist()) {
+            return new JsonResponse(['success' => false, 'message' => 'Checklist view not enabled for your user group.']);
+        }
         $data = $request->getParsedBody() ?? [];
         $sessionId = (int)($data['session'] ?? 0);
         $pageId = (int)($data['page'] ?? 0);
@@ -103,6 +106,9 @@ final class GoLiveAjaxController
 
     public function togglePageModule(ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->canViewChecklist()) {
+            return new JsonResponse(['success' => false, 'message' => 'Checklist view not enabled for your user group.']);
+        }
         $data = $request->getParsedBody() ?? [];
         $sessionId = (int)($data['session'] ?? 0);
         $pageId = (int)($data['page'] ?? 0);
@@ -195,6 +201,9 @@ final class GoLiveAjaxController
 
     public function toggleItemModule(ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->canViewChecklist()) {
+            return new JsonResponse(['success' => false, 'message' => 'Checklist view not enabled for your user group.']);
+        }
         $data = $request->getParsedBody() ?? [];
         $sessionId = (int)($data['session'] ?? 0);
         $itemKey = trim((string)($data['itemKey'] ?? ''));
@@ -287,6 +296,9 @@ final class GoLiveAjaxController
 
     public function pageModuleEntries(ServerRequestInterface $request): ResponseInterface
     {
+        if (!$this->canViewChecklist()) {
+            return new JsonResponse(['success' => false, 'message' => 'Checklist view not enabled for your user group.']);
+        }
         $data = array_merge($request->getQueryParams(), $request->getParsedBody() ?? []);
         $pageId = (int)($data['page'] ?? 0);
         $selectedLanguage = (int)($data['language'] ?? 0);
@@ -349,6 +361,20 @@ final class GoLiveAjaxController
     private function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    private function canViewChecklist(): bool
+    {
+        $backendUser = $this->getBackendUser();
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+
+        if ($backendUser->check('modules', 'web_hdgolive')) {
+            return true;
+        }
+
+        return $backendUser->check('custom_options', 'tx_hdgolive:checklist_view');
     }
 
     private function getSessionRow(int $sessionId): ?array

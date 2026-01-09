@@ -124,7 +124,8 @@
       <table>
         <thead>
           <tr>
-            <th style="width: 40%;">Page</th>
+            <th style="width: 12%;">Language</th>
+            <th style="width: 35%;">Page</th>
             <th style="width: 12%;">Status</th>
             <th style="width: 18%;">Checked by</th>
             <th style="width: 15%;">Checked at</th>
@@ -134,12 +135,8 @@
         <tbody>
           <f:for each="{pages}" as="page">
             <tr>
-              <td>
-                <span class="flag">
-                  <f:format.raw>{page.languageFlag}</f:format.raw>
-                </span>
-                {page.titleDisplay} [{page.uid}]
-              </td>
+              <td>{page.languageLabel}</td>
+              <td>{page.titleDisplay} [{page.uid}]</td>
               <td>
                 <span class="status-{f:if(condition: page.status == 1, then: 'pass', else: '{f:if(condition: page.status == 2, then: \'failed\', else: \'pending\')}')}">
                   {page.statusLabel}

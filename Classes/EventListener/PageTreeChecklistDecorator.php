@@ -26,6 +26,10 @@ final class PageTreeChecklistDecorator
 
     public function __invoke(AfterPageTreeItemsPreparedEvent $event): void
     {
+        if (!$this->canViewChecklist()) {
+            return;
+        }
+
         $state = $this->getBackendUser()->getSessionData('hd_golive');
         if (!is_array($state)) {
             return;
@@ -121,5 +125,19 @@ final class PageTreeChecklistDecorator
     private function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    private function canViewChecklist(): bool
+    {
+        $backendUser = $this->getBackendUser();
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+
+        if ($backendUser->check('modules', 'web_hdgolive')) {
+            return true;
+        }
+
+        return $backendUser->check('custom_options', 'tx_hdgolive:checklist_view');
     }
 }

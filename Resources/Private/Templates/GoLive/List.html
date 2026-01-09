@@ -261,6 +261,9 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
+                                <th style="width: 1%;">
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.language" />
+                                </th>
                                 <th>
                                     <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.title" />
                                 </th>
@@ -281,9 +284,11 @@
                         <tbody>
                             <f:for each="{pages}" as="page">
                                 <tr class="{page.statusClass}" data-hdgolive-status="{page.status}" data-hdgolive-language="{page.sys_language_uid}" data-hdgolive-root="{f:if(condition: page.depth == 0, then: '1', else: '0')}">
+                                    <td class="text-nowrap">
+                                        <f:format.raw>{page.languageFlag}</f:format.raw>
+                                    </td>
                                     <td>
                                         <span style="padding-left: {page.indent}px;">
-                                            <f:format.raw>{page.languageFlag}</f:format.raw>
                                             <f:format.raw>{page.iconHtml}</f:format.raw>
                                             <a href="{page.layoutUrl}">
                                                 [{page.uid}] {page.titleDisplay}

@@ -1,0 +1,13 @@
+.. This is included at the top of each page to set default roles and substitutions.
+
+.. role:: php(code)
+   :language: php
+
+.. role:: typoscript(code)
+   :language: typoscript
+
+.. role:: shell(code)
+   :language: shell
+
+.. role:: yaml(code)
+   :language: yaml

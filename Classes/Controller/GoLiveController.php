@@ -26,7 +26,6 @@ use Hyperdigital\HdGolive\Domain\GoLiveStatus;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 
 class GoLiveController extends ActionController
 {
@@ -146,6 +145,8 @@ class GoLiveController extends ActionController
         $siteTitle = null;
         $languageOptions = [];
         $languageFlags = [];
+        $languageLabels = [];
+        $languageCodes = [];
         $siteObject = null;
         if ($selectedSite !== null && $selectedSite !== '') {
             try {
@@ -171,21 +172,15 @@ class GoLiveController extends ActionController
         }
 
         if ($siteObject !== null) {
-            $defaultLanguage = $siteObject->getDefaultLanguage();
-            $defaultFlagIdentifier = $defaultLanguage->getFlagIdentifier();
-            if ($defaultFlagIdentifier !== '') {
-                $languageFlags['0'] = $this->iconFactory
-                    ->getIcon($defaultFlagIdentifier, \TYPO3\CMS\Core\Imaging\IconSize::SMALL)
-                    ->render();
-            }
-            foreach ($siteObject->getLanguages() as $language) {
+            foreach ($siteObject->getAllLanguages() as $languageId => $language) {
                 $flagIdentifier = $language->getFlagIdentifier();
-                if ($flagIdentifier === '') {
-                    continue;
+                if ($flagIdentifier !== '') {
+                    $languageFlags[(string)$languageId] = $this->iconFactory
+                        ->getIcon($flagIdentifier, \TYPO3\CMS\Core\Imaging\IconSize::SMALL)
+                        ->render();
                 }
-                $languageFlags[(string)$language->getLanguageId()] = $this->iconFactory
-                    ->getIcon($flagIdentifier, \TYPO3\CMS\Core\Imaging\IconSize::SMALL)
-                    ->render();
+                $languageLabels[(string)$languageId] = $this->getLanguageLabel($language);
+                $languageCodes[(string)$languageId] = $this->getLanguageCode($language);
             }
         }
 
@@ -1463,19 +1458,11 @@ class GoLiveController extends ActionController
             return true;
         }
 
-        $config = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('hd_golive');
-        $allowedGroups = trim((string)($config['checklistViewGroups'] ?? ''));
-        if ($allowedGroups === '') {
+        if ($backendUser->check('modules', 'web_hdgolive')) {
             return true;
         }
 
-        $allowedIds = GeneralUtility::intExplode(',', $allowedGroups, true);
-        if ($allowedIds === []) {
-            return false;
-        }
-
-        $userGroupIds = GeneralUtility::intExplode(',', (string)($backendUser->user['usergroup'] ?? ''), true);
-        return array_intersect($allowedIds, $userGroupIds) !== [];
+        return $backendUser->check('custom_options', 'tx_hdgolive:checklist_view');
     }
 
 
@@ -1677,7 +1664,16 @@ class GoLiveController extends ActionController
             $page['checkedTime'] = $pageCheck['checkedTime'];
             $page['pagecheckUid'] = $pageCheck['pagecheckUid'];
             $languageKey = (string)($page['sys_language_uid'] ?? 0);
-            $page['languageFlag'] = $languageFlags[$languageKey] ?? '';
+            $languageLabel = $languageLabels[$languageKey] ?? '';
+            if ($languageLabel === '' && $siteObject !== null) {
+                try {
+                    $languageLabel = $this->getLanguageLabel($siteObject->getLanguageById((int)$languageKey));
+                } catch (\Throwable) {
+                    $languageLabel = '';
+                }
+            }
+            $page['languageLabel'] = $languageLabel !== '' ? $languageLabel : $languageKey;
+            $page['languageCode'] = '';
             if ($page['checkedById'] > 0) {
                 $userIds[] = $page['checkedById'];
             }
@@ -1831,6 +1827,50 @@ class GoLiveController extends ActionController
             GoLiveStatus::FAILED => LocalizationUtility::translate('LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.failed', 'hd_golive') ?? 'Failed',
             default => LocalizationUtility::translate('LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pending', 'hd_golive') ?? 'To be checked',
         };
+    }
+
+    private function getLanguageCode(\TYPO3\CMS\Core\Site\Entity\SiteLanguage $language): string
+    {
+        $code = trim($language->getLocale()->getLanguageCode());
+        if ($code === '') {
+            $candidate = trim((string)$language->getHreflang(true));
+            if ($candidate === '') {
+                $candidate = trim((string)$language->getHreflang());
+            }
+            if ($candidate === '') {
+                $candidate = trim((string)$language->getTypo3Language());
+            }
+            if ($candidate !== '' && preg_match('/^[a-z]{2}/i', $candidate, $matches) === 1) {
+                $code = $matches[0];
+            }
+        }
+        if ($code === '') {
+            return '';
+        }
+        return strtoupper(substr($code, 0, 2));
+    }
+
+    private function getLanguageLabel(\TYPO3\CMS\Core\Site\Entity\SiteLanguage $language): string
+    {
+        $label = trim((string)$language->getTitle());
+        if ($label !== '') {
+            return $label;
+        }
+        $label = trim((string)$language->getNavigationTitle());
+        if ($label !== '') {
+            return $label;
+        }
+        $label = trim((string)$language->getHreflang(true));
+        if ($label === '') {
+            $label = trim((string)$language->getHreflang());
+        }
+        if ($label === '') {
+            $label = trim((string)$language->getLocale());
+        }
+        if ($label === '') {
+            $label = trim((string)$language->getTypo3Language());
+        }
+        return $label;
     }
 
     private function normalizeStatusFilter(?string $statusFilter): ?int
