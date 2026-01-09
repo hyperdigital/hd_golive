@@ -4,6 +4,7 @@
   "description": "GO Live checklist backend module",
   "license": "GPL-2.0-or-later",
   "require": {
+    "typo3/cms-core": "^13.4",
     "dompdf/dompdf": "^2.0"
   },
   "autoload": {
