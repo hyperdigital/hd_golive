@@ -1,0 +1,24 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Hyperdigital\HdGolive\:
+    resource: '../Classes/*'
+
+  Hyperdigital\HdGolive\EventListener\PageTreeChecklistDecorator:
+    tags:
+      - name: event.listener
+        identifier: 'hd-golive.page-tree-checklist'
+        event: TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent
+
+  Hyperdigital\HdGolive\EventListener\PageModuleGoLiveHeader:
+    tags:
+      - name: event.listener
+        identifier: 'hd-golive.page-module-header'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
+
+  Hyperdigital\HdGolive\ContextMenu\GoLivePageProvider:
+    tags:
+      - name: backend.contextmenu.itemprovider

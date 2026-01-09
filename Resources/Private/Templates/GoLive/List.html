@@ -1,0 +1,376 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:be.pageRenderer includeJavaScriptModules="{0: '@hyperdigital/hd-golive/module.js'}" />
+    <f:asset.script identifier="hd-golive-module-init" type="module">
+        import module from '@hyperdigital/hd-golive/module.js';
+        if (module && typeof module.init === 'function') {
+            module.init();
+        }
+    </f:asset.script>
+    <h1>
+        <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:module.title" />
+    </h1>
+
+    <f:if condition="{siteTitle}">
+        <p class="text-muted">{siteTitle}</p>
+    </f:if>
+
+    <f:if condition="{selectedSite}">
+        <f:then>
+            <f:if condition="{activeSession}">
+                <f:if condition="{isSessionOwner}">
+                    <f:then>
+                        <f:form action="updateSessionTitle" method="post" class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                            <f:form.hidden name="site" value="{selectedSite}" />
+                            <f:form.hidden name="session" value="{activeSession.uid}" />
+                            <label for="hdgolive-session-title" class="form-label mb-0">
+                                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.title" />
+                            </label>
+                            <div class="input-group" style="min-width: 320px;">
+                                <f:form.textfield
+                                    id="hdgolive-session-title"
+                                    name="title"
+                                    value="{activeSession.title}"
+                                    class="form-control" />
+                                <button class="btn btn-default" type="submit">
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.update" />
+                                </button>
+                            </div>
+                        </f:form>
+                    </f:then>
+                    <f:else>
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                            <label class="form-label mb-0">
+                                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.title" />
+                            </label>
+                            <span class="fw-semibold">{activeSession.title}</span>
+                            <f:if condition="{activeSessionOwnerName}">
+                                <span class="text-muted">
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.owner" />
+                                    {activeSessionOwnerName}
+                                </span>
+                            </f:if>
+                        </div>
+                    </f:else>
+                </f:if>
+            </f:if>
+        </f:then>
+        <f:else>
+            <f:if condition="{siteSessions}">
+                <f:then>
+                    <f:for each="{siteSessions}" as="site">
+                        <h2>{site.label}</h2>
+                        <f:if condition="{site.sessions}">
+                            <f:then>
+                                <ul class="list-group mb-3">
+                                    <f:for each="{site.sessions}" as="session">
+                                        <li class="list-group-item d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                                            <span>{session.label}</span>
+                                            <a class="btn btn-default btn-sm" href="{session.href}">
+                                                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.select" />
+                                            </a>
+                                        </li>
+                                    </f:for>
+                                </ul>
+                            </f:then>
+                            <f:else>
+                                <p class="text-muted">
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.none" />
+                                </p>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                </f:then>
+                <f:else>
+                    <f:be.infobox
+                        state="{f:constant(name: 'TYPO3\\CMS\\Fluid\\ViewHelpers\\Be\\InfoboxViewHelper::STATE_INFO')}"
+                        title="{f:translate(key: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:site.none')}" />
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+
+    <f:if condition="{showOverview}">
+        <f:then></f:then>
+        <f:else>
+            <f:if condition="{canViewChecklist}">
+                <f:then>
+                    <f:if condition="{activeSession}">
+        <f:then>
+            <p data-hdgolive-progress data-pass-count="{passCount}" data-fail-count="{failCount}" data-pending-count="{pendingCount}" data-total-count="{totalCount}">
+                <strong>
+                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.progress" />
+                </strong>
+                <span data-hdgolive-pass-count>{passCount}</span>
+                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pass" />
+                /
+                <span data-hdgolive-fail-count>{failCount}</span>
+                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.failed" />
+                /
+                <span data-hdgolive-pending-count>{pendingCount}</span>
+                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pending" />
+                /
+                <span data-hdgolive-total-count>{totalCount}</span>
+                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.total" />
+            </p>
+            <div class="progress mb-3" style="height: 8px;" data-hdgolive-progress-bar>
+                <div class="progress-bar bg-success" role="progressbar" style="width: {passPercent}%;" aria-valuenow="{passPercent}" aria-valuemin="0" aria-valuemax="100" data-hdgolive-progress-pass></div>
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {failPercent}%;" aria-valuenow="{failPercent}" aria-valuemin="0" aria-valuemax="100" data-hdgolive-progress-fail></div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {pendingPercent}%;" aria-valuenow="{pendingPercent}" aria-valuemin="0" aria-valuemax="100" data-hdgolive-progress-pending></div>
+            </div>
+
+            <div class="form-inline d-flex flex-wrap gap-2 align-items-center" data-hdgolive-status-filter>
+                <div class="form-group">
+                    <label for="hdgolive-status-filter-inline" class="form-label mb-0">
+                        <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:filter.status" />
+                    </label>
+                    <select id="hdgolive-status-filter-inline" class="form-control" data-hdgolive-status-select>
+                        <option value="all">
+                            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:filter.status.all" />
+                        </option>
+                        <option value="0">
+                            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pending" />
+                        </option>
+                        <option value="1">
+                            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pass" />
+                        </option>
+                        <option value="2">
+                            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.failed" />
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="hdgolive-language-filter-inline" class="form-label mb-0">
+                        <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:filter.language" />
+                    </label>
+                    <select id="hdgolive-language-filter-inline" class="form-control" data-hdgolive-language-select>
+                        <option value="all">
+                            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:filter.language.all" />
+                        </option>
+                        <f:for each="{languageOptions}" as="languageLabel" key="languageId">
+                            <option value="{languageId}">{languageLabel}</option>
+                        </f:for>
+                    </select>
+                </div>
+            </div>
+
+            <h2>
+                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.title" />
+            </h2>
+            <f:if condition="{checkItems}">
+                <f:then>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.title" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.key" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.status" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.checkedBy" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{checkItems}" as="item">
+                                <tr class="{item.statusClass}" data-hdgolive-status="{item.status}">
+                                    <td>
+                                        <f:if condition="{item.detailUrl}">
+                                            <f:then>
+                                                <a href="{item.detailUrl}">{item.title}</a>
+                                            </f:then>
+                                            <f:else>{item.title}</f:else>
+                                        </f:if>
+                                    </td>
+                                    <td class="text-muted">{item.key}</td>
+                                    <td class="text-nowrap">
+                                        <div class="t3js-hdgolive-toggle-item">
+                                            <select
+                                                class="form-select form-select-sm"
+                                                name="status"
+                                                data-site="{selectedSite}"
+                                                data-session="{activeSession.uid}"
+                                                data-item-key="{item.key}"
+                                                data-status="{item.status}">
+                                                <option value="0" {f:if(condition: item.status == 0, then: 'selected')}>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pending" />
+                                                </option>
+                                                <option value="1" {f:if(condition: item.status == 1, then: 'selected')}>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pass" />
+                                                </option>
+                                                <option value="2" {f:if(condition: item.status == 2, then: 'selected')}>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.failed" />
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted">
+                                            <f:if condition="{item.notesPreview}">
+                                                <f:then>
+                                                    <f:for each="{item.notesPreview}" as="note">
+                                                        <div>{note}</div>
+                                                    </f:for>
+                                                </f:then>
+                                                <f:else>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes.empty" />
+                                                </f:else>
+                                            </f:if>
+                                        </div>
+                                        <f:if condition="{item.editUrl}">
+                                            <a class="btn btn-default btn-sm mt-1" href="{item.editUrl}" data-hdgolive-edit-link>
+                                                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes.edit" />
+                                            </a>
+                                        </f:if>
+                                    </td>
+                                    <td class="text-muted">
+                                        <div data-hdgolive-checked-by>{item.checkedBy}</div>
+                                        <div class="text-muted" data-hdgolive-checked-time>
+                                            <f:if condition="{item.checkedTime}">
+                                                <f:format.date format="Y-m-d H:i">{item.checkedTime}</f:format.date>
+                                            </f:if>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </f:then>
+                <f:else>
+                    <f:be.infobox
+                        state="{f:constant(name: 'TYPO3\\CMS\\Fluid\\ViewHelpers\\Be\\InfoboxViewHelper::STATE_INFO')}"
+                        title="{f:translate(key: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.none')}" />
+                </f:else>
+            </f:if>
+
+            <f:if condition="{pages}">
+                <f:then>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.title" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.slug" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.status" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes" />
+                                </th>
+                                <th>
+                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.checkedBy" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{pages}" as="page">
+                                <tr class="{page.statusClass}" data-hdgolive-status="{page.status}" data-hdgolive-language="{page.sys_language_uid}" data-hdgolive-root="{f:if(condition: page.depth == 0, then: '1', else: '0')}">
+                                    <td>
+                                        <span style="padding-left: {page.indent}px;">
+                                            <f:format.raw>{page.languageFlag}</f:format.raw>
+                                            <f:format.raw>{page.iconHtml}</f:format.raw>
+                                            <a href="{page.layoutUrl}">
+                                                [{page.uid}] {page.titleDisplay}
+                                            </a>
+                                        </span>
+                                        <f:if condition="{page.hidden}">
+                                            <span class="badge badge-warning">
+                                                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.hidden" />
+                                            </span>
+                                        </f:if>
+                                    </td>
+                                    <td class="text-muted">{page.slug}</td>
+                                    <td class="text-nowrap">
+                                        <div class="t3js-hdgolive-toggle-page">
+                                            <select
+                                                class="form-select form-select-sm"
+                                                name="status"
+                                                data-site="{selectedSite}"
+                                                data-session="{activeSession.uid}"
+                                                data-page="{page.uid}"
+                                                data-status="{page.status}">
+                                                <option value="0" {f:if(condition: page.status == 0, then: 'selected')}>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pending" />
+                                                </option>
+                                                <option value="1" {f:if(condition: page.status == 1, then: 'selected')}>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pass" />
+                                                </option>
+                                                <option value="2" {f:if(condition: page.status == 2, then: 'selected')}>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.failed" />
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted">
+                                            <f:if condition="{page.notesPreview}">
+                                                <f:then>
+                                                    <f:for each="{page.notesPreview}" as="note">
+                                                        <div>{note}</div>
+                                                    </f:for>
+                                                </f:then>
+                                                <f:else>
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes.empty" />
+                                                </f:else>
+                                            </f:if>
+                                        </div>
+                                        <f:if condition="{page.editUrl}">
+                                            <a class="btn btn-default btn-sm mt-1" href="{page.editUrl}" data-hdgolive-edit-link>
+                                                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes.edit" />
+                                            </a>
+                                        </f:if>
+                                    </td>
+                                    <td class="text-muted">
+                                        <div data-hdgolive-checked-by>{page.checkedBy}</div>
+                                        <div class="text-muted" data-hdgolive-checked-time>
+                                            <f:if condition="{page.checkedTime}">
+                                                <f:format.date format="Y-m-d H:i">{page.checkedTime}</f:format.date>
+                                            </f:if>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </f:then>
+                <f:else>
+                    <f:be.infobox
+                        state="{f:constant(name: 'TYPO3\\CMS\\Fluid\\ViewHelpers\\Be\\InfoboxViewHelper::STATE_INFO')}"
+                        title="{f:translate(key: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.none')}" />
+                </f:else>
+            </f:if>
+        </f:then>
+        <f:else>
+            <f:be.infobox
+                state="{f:constant(name: 'TYPO3\\CMS\\Fluid\\ViewHelpers\\Be\\InfoboxViewHelper::STATE_INFO')}"
+                title="{f:translate(key: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:session.none')}" />
+        </f:else>
+                    </f:if>
+                </f:then>
+                <f:else>
+                    <f:be.infobox
+                        state="{f:constant(name: 'TYPO3\\CMS\\Fluid\\ViewHelpers\\Be\\InfoboxViewHelper::STATE_INFO')}"
+                        title="{f:translate(key: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.permission')}" />
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+</f:section>
+
+</html>

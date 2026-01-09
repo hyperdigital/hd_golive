@@ -1,0 +1,19 @@
+{
+  "name": "hyperdigital/hd-golive",
+  "type": "typo3-cms-extension",
+  "description": "GO Live checklist backend module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "dompdf/dompdf": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Hyperdigital\\HdGolive\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "hd_golive"
+    }
+  }
+}

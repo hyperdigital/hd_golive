@@ -1,0 +1,125 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Hyperdigital\HdGolive\EventListener;
+
+use TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Backend\Dto\Tree\Label\Label;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\ParameterType;
+use Hyperdigital\HdGolive\Domain\GoLiveStatus;
+
+#[AsEventListener('hd-golive.page-tree-checklist')]
+final class PageTreeChecklistDecorator
+{
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+        private readonly SiteFinder $siteFinder,
+    ) {}
+
+    public function __invoke(AfterPageTreeItemsPreparedEvent $event): void
+    {
+        $state = $this->getBackendUser()->getSessionData('hd_golive');
+        if (!is_array($state)) {
+            return;
+        }
+
+        $sessionId = (int)($state['session'] ?? 0);
+        $siteIdentifier = (string)($state['site'] ?? '');
+        if ($sessionId <= 0 || $siteIdentifier === '') {
+            return;
+        }
+
+        $items = $event->getItems();
+        $pageIds = [];
+        foreach ($items as $item) {
+            if (($item['recordType'] ?? '') !== 'pages') {
+                continue;
+            }
+            $pageIds[] = (int)$item['identifier'];
+        }
+
+        if ($pageIds === []) {
+            return;
+        }
+
+        $pageIdsInSite = [];
+        foreach ($pageIds as $pageId) {
+            try {
+                $site = $this->siteFinder->getSiteByPageId($pageId);
+            } catch (\Throwable) {
+                continue;
+            }
+            if ($site->getIdentifier() === $siteIdentifier) {
+                $pageIdsInSite[] = $pageId;
+            }
+        }
+
+        if ($pageIdsInSite === []) {
+            return;
+        }
+
+        $statusByPage = [];
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_hdgolive_pagecheck');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $rows = $queryBuilder
+            ->select('page', 'status', 'checked')
+            ->from('tx_hdgolive_pagecheck')
+            ->where(
+                $queryBuilder->expr()->eq('session', $queryBuilder->createNamedParameter($sessionId, ParameterType::INTEGER)),
+                $queryBuilder->expr()->in(
+                    'page',
+                    $queryBuilder->createNamedParameter($pageIdsInSite, ArrayParameterType::INTEGER)
+                )
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        foreach ($rows as $row) {
+            $status = GoLiveStatus::normalize((int)($row['status'] ?? 0));
+            if ($status === GoLiveStatus::PENDING && (int)($row['checked'] ?? 0) === 1) {
+                $status = GoLiveStatus::PASS;
+            }
+            $statusByPage[(int)$row['page']] = $status;
+        }
+
+        foreach ($items as &$item) {
+            if (($item['recordType'] ?? '') !== 'pages') {
+                continue;
+            }
+            $pageId = (int)$item['identifier'];
+            if (!in_array($pageId, $pageIdsInSite, true)) {
+                continue;
+            }
+            $status = $statusByPage[$pageId] ?? GoLiveStatus::PENDING;
+            $color = match ($status) {
+                GoLiveStatus::PASS => '#2f6f5e',
+                GoLiveStatus::FAILED => '#b02a37',
+                default => '#c88f00',
+            };
+            $item['labels'] = array_values(array_merge($item['labels'] ?? [], [
+                new Label(
+                    label: 'GO Live',
+                    color: $color,
+                    priority: 50,
+                ),
+            ]));
+            // Only left-side label highlight, no right-side status icon.
+        }
+        unset($item);
+
+        $event->setItems($items);
+    }
+
+    private function getBackendUser(): BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'];
+    }
+}

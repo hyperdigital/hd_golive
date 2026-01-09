@@ -1,0 +1,59 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <h1>
+        <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.detail.title" />
+    </h1>
+
+    <p class="text-muted">{item.title}</p>
+
+    <div class="mb-3">
+        <strong>
+            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.key" />
+        </strong>
+        <span class="ms-2 text-muted">{item.key}</span>
+    </div>
+
+    <div class="mb-3">
+        <strong>
+            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.description" />
+        </strong>
+        <div class="mt-1">
+            <f:if condition="{item.description}">
+                <f:then>
+                    <f:format.nl2br>{item.description}</f:format.nl2br>
+                </f:then>
+                <f:else>
+                    <span class="text-muted">—</span>
+                </f:else>
+            </f:if>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <strong>
+            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.status" />
+        </strong>
+        <span class="ms-2">{statusLabel}</span>
+        <f:if condition="{checkedByName}">
+            <span class="text-muted ms-2">{checkedByName}</span>
+        </f:if>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <f:if condition="{editUrl}">
+            <a class="btn btn-default" href="{editUrl}">
+                <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.edit" />
+            </a>
+        </f:if>
+        <a class="btn btn-default" href="{listUrl}">
+            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.back" />
+        </a>
+    </div>
+</f:section>
+
+</html>

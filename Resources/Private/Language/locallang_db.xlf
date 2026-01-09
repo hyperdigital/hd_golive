@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.0">
+  <file source-language="en" datatype="plaintext" original="messages" date="2025-01-01T00:00:00Z">
+    <header/>
+    <body>
+      <trans-unit id="tx_hdgolive_session">
+        <source>GO Live Session</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_session.title">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_session.site_identifier">
+        <source>Site identifier</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_session.shared">
+        <source>Shared session</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_session.closed">
+        <source>Closed</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_session.closed_time">
+        <source>Closed at</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_session.closed_by">
+        <source>Closed by</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck">
+        <source>GO Live Page Check</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck.session">
+        <source>Session</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck.page">
+        <source>Page</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck.checked">
+        <source>Checked</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck.checked_time">
+        <source>Checked at</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_pagecheck.checked_by">
+        <source>Checked by</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_checkitem">
+        <source>GO Live Checklist Item</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_checkitem.title">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_checkitem.item_key">
+        <source>Key</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_checkitem.description">
+        <source>Description</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck">
+        <source>GO Live Item Check</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck.session">
+        <source>Session</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck.item_key">
+        <source>Item key</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck.checked">
+        <source>Checked</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_status.pending">
+        <source>To be checked</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_status.pass">
+        <source>Pass</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_status.failed">
+        <source>Failed</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck.checked_time">
+        <source>Checked at</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_itemcheck.checked_by">
+        <source>Checked by</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_note">
+        <source>GO Live Note</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_note.note_text">
+        <source>Note</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_note.note_status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_note.status.todo">
+        <source>To be solved</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_note.status.solved">
+        <source>Solved</source>
+      </trans-unit>
+      <trans-unit id="tx_hdgolive_note.status.denied">
+        <source>Denied</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

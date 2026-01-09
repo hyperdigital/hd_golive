@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.0">
+  <file source-language="en" datatype="plaintext" original="messages" date="2025-01-01T00:00:00Z">
+    <header/>
+    <body>
+      <trans-unit id="module.title">
+        <source>GO Live checklist</source>
+      </trans-unit>
+      <trans-unit id="site.select">
+        <source>Site</source>
+      </trans-unit>
+      <trans-unit id="site.none">
+        <source>No sites found.</source>
+      </trans-unit>
+      <trans-unit id="filters.apply">
+        <source>Apply</source>
+      </trans-unit>
+      <trans-unit id="filter.status">
+        <source>Status filter</source>
+      </trans-unit>
+      <trans-unit id="filter.status.all">
+        <source>All statuses</source>
+      </trans-unit>
+      <trans-unit id="filter.language">
+        <source>Language filter</source>
+      </trans-unit>
+      <trans-unit id="filter.language.all">
+        <source>All languages</source>
+      </trans-unit>
+      <trans-unit id="export.title">
+        <source>Export checklist</source>
+      </trans-unit>
+      <trans-unit id="export.button">
+        <source>Export PDF</source>
+      </trans-unit>
+      <trans-unit id="export.session">
+        <source>Session:</source>
+      </trans-unit>
+      <trans-unit id="export.include.pages">
+        <source>Include pages</source>
+      </trans-unit>
+      <trans-unit id="export.include.items">
+        <source>Include checklist items</source>
+      </trans-unit>
+      <trans-unit id="export.include.notes">
+        <source>Include notes</source>
+      </trans-unit>
+      <trans-unit id="export.submit">
+        <source>Generate PDF</source>
+      </trans-unit>
+      <trans-unit id="export.cancel">
+        <source>Cancel</source>
+      </trans-unit>
+      <trans-unit id="session.select">
+        <source>Checklist session</source>
+      </trans-unit>
+      <trans-unit id="session.none">
+        <source>No checklist session selected. Start a new session to begin.</source>
+      </trans-unit>
+      <trans-unit id="session.new">
+        <source>Start new checklist</source>
+      </trans-unit>
+      <trans-unit id="session.close">
+        <source>Close checklist session</source>
+      </trans-unit>
+      <trans-unit id="session.reopen">
+        <source>Reopen checklist session</source>
+      </trans-unit>
+      <trans-unit id="session.title">
+        <source>Session title</source>
+      </trans-unit>
+      <trans-unit id="session.update">
+        <source>Update title</source>
+      </trans-unit>
+      <trans-unit id="session.share">
+        <source>Share session</source>
+      </trans-unit>
+      <trans-unit id="session.unshare">
+        <source>Unshare session</source>
+      </trans-unit>
+      <trans-unit id="session.sharedLabel">
+        <source>shared</source>
+      </trans-unit>
+      <trans-unit id="session.owner">
+        <source>Owner:</source>
+      </trans-unit>
+      <trans-unit id="session.remove">
+        <source>Remove session</source>
+      </trans-unit>
+      <trans-unit id="pages.progress">
+        <source>Progress</source>
+      </trans-unit>
+      <trans-unit id="items.title">
+        <source>Checklist items</source>
+      </trans-unit>
+      <trans-unit id="items.detail.title">
+        <source>Checklist item</source>
+      </trans-unit>
+      <trans-unit id="items.notes">
+        <source>Notes</source>
+      </trans-unit>
+      <trans-unit id="items.description">
+        <source>Description</source>
+      </trans-unit>
+      <trans-unit id="items.notes.empty">
+        <source>No notes yet.</source>
+      </trans-unit>
+      <trans-unit id="items.notes.edit">
+        <source>Edit notes</source>
+      </trans-unit>
+      <trans-unit id="items.none">
+        <source>No checklist items found.</source>
+      </trans-unit>
+      <trans-unit id="items.permission">
+        <source>Checklist view not enabled for your user group.</source>
+      </trans-unit>
+      <trans-unit id="items.key">
+        <source>Key</source>
+      </trans-unit>
+      <trans-unit id="items.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="items.save">
+        <source>Save</source>
+      </trans-unit>
+      <trans-unit id="items.checkedBy">
+        <source>Checked by:</source>
+      </trans-unit>
+      <trans-unit id="items.edit">
+        <source>Edit item</source>
+      </trans-unit>
+      <trans-unit id="items.back">
+        <source>Back to checklist</source>
+      </trans-unit>
+      <trans-unit id="items.checkedAt">
+        <source>Checked at:</source>
+      </trans-unit>
+      <trans-unit id="pages.title">
+        <source>Page</source>
+      </trans-unit>
+      <trans-unit id="pages.slug">
+        <source>Slug</source>
+      </trans-unit>
+      <trans-unit id="pages.notes">
+        <source>Notes</source>
+      </trans-unit>
+      <trans-unit id="pages.notes.empty">
+        <source>No notes yet.</source>
+      </trans-unit>
+      <trans-unit id="pages.notes.edit">
+        <source>Edit notes</source>
+      </trans-unit>
+      <trans-unit id="pages.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="pages.hidden">
+        <source>Hidden</source>
+      </trans-unit>
+      <trans-unit id="pages.save">
+        <source>Save</source>
+      </trans-unit>
+      <trans-unit id="pages.checkedBy">
+        <source>Checked by:</source>
+      </trans-unit>
+      <trans-unit id="pages.checkedAt">
+        <source>Checked at:</source>
+      </trans-unit>
+      <trans-unit id="contextmenu.status.pending">
+        <source>GO Live: set to "To be checked"</source>
+      </trans-unit>
+      <trans-unit id="contextmenu.status.pass">
+        <source>GO Live: set to "Pass"</source>
+      </trans-unit>
+      <trans-unit id="contextmenu.status.failed">
+        <source>GO Live: set to "Failed"</source>
+      </trans-unit>
+      <trans-unit id="status.pending">
+        <source>To be checked</source>
+      </trans-unit>
+      <trans-unit id="status.pass">
+        <source>Pass</source>
+      </trans-unit>
+      <trans-unit id="status.failed">
+        <source>Failed</source>
+      </trans-unit>
+      <trans-unit id="status.total">
+        <source>Total</source>
+      </trans-unit>
+      <trans-unit id="pageModule.status">
+        <source>Status</source>
+      </trans-unit>
+      <trans-unit id="pageModule.note">
+        <source>Add note</source>
+      </trans-unit>
+      <trans-unit id="pageModule.loading">
+        <source>Loading GO Live status...</source>
+      </trans-unit>
+      <trans-unit id="pages.none">
+        <source>No pages found for this site.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        color: #1a1a1a;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 8px 0;
+      }
+      h2 {
+        font-size: 14px;
+        margin: 16px 0 8px 0;
+      }
+      .meta {
+        font-size: 10px;
+        color: #555;
+        margin-bottom: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 16px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 6px;
+        vertical-align: top;
+      }
+      th {
+        background: #f2f2f2;
+        text-align: left;
+      }
+      .status-pass {
+        color: #1f5f4a;
+        font-weight: bold;
+      }
+      .status-failed {
+        color: #a1222a;
+        font-weight: bold;
+      }
+      .status-pending {
+        color: #8a6d00;
+        font-weight: bold;
+      }
+      .notes {
+        font-size: 10px;
+        color: #555;
+      }
+      .notes div {
+        margin-bottom: 4px;
+      }
+      .flag {
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>GO Live checklist</h1>
+    <div class="meta">
+      <div>Site: {siteTitle}</div>
+      <div>Session: {sessionTitle}</div>
+      <div>
+        Exported:
+        <f:format.date format="Y-m-d H:i" date="now" />
+      </div>
+    </div>
+
+    <f:if condition="{includeItems}">
+      <h2>Checklist items</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40%;">Item</th>
+            <th style="width: 12%;">Status</th>
+            <th style="width: 18%;">Checked by</th>
+            <th style="width: 15%;">Checked at</th>
+            <th style="width: 15%;">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <f:for each="{items}" as="item">
+            <tr>
+              <td>{item.title}</td>
+              <td>
+                <span class="status-{f:if(condition: item.status == 1, then: 'pass', else: '{f:if(condition: item.status == 2, then: \'failed\', else: \'pending\')}')}">
+                  {item.statusLabel}
+                </span>
+              </td>
+              <td>{item.checkedBy}</td>
+              <td>
+                <f:if condition="{item.checkedTime}">
+                  <f:format.date format="Y-m-d H:i">{item.checkedTime}</f:format.date>
+                </f:if>
+              </td>
+              <td class="notes">
+                <f:if condition="{includeNotes}">
+                  <f:then>
+                    <f:if condition="{item.notes}">
+                      <f:then>
+                        <f:for each="{item.notes}" as="note">
+                          <div>{note.status}: {note.text}</div>
+                        </f:for>
+                      </f:then>
+                    </f:if>
+                  </f:then>
+                </f:if>
+              </td>
+            </tr>
+          </f:for>
+        </tbody>
+      </table>
+    </f:if>
+
+    <f:if condition="{includePages}">
+      <h2>Pages</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40%;">Page</th>
+            <th style="width: 12%;">Status</th>
+            <th style="width: 18%;">Checked by</th>
+            <th style="width: 15%;">Checked at</th>
+            <th style="width: 15%;">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <f:for each="{pages}" as="page">
+            <tr>
+              <td>
+                <span class="flag">
+                  <f:format.raw>{page.languageFlag}</f:format.raw>
+                </span>
+                {page.titleDisplay} [{page.uid}]
+              </td>
+              <td>
+                <span class="status-{f:if(condition: page.status == 1, then: 'pass', else: '{f:if(condition: page.status == 2, then: \'failed\', else: \'pending\')}')}">
+                  {page.statusLabel}
+                </span>
+              </td>
+              <td>{page.checkedBy}</td>
+              <td>
+                <f:if condition="{page.checkedTime}">
+                  <f:format.date format="Y-m-d H:i">{page.checkedTime}</f:format.date>
+                </f:if>
+              </td>
+              <td class="notes">
+                <f:if condition="{includeNotes}">
+                  <f:then>
+                    <f:if condition="{page.notes}">
+                      <f:then>
+                        <f:for each="{page.notes}" as="note">
+                          <div>{note.status}: {note.text}</div>
+                        </f:for>
+                      </f:then>
+                    </f:if>
+                  </f:then>
+                </f:if>
+              </td>
+            </tr>
+          </f:for>
+        </tbody>
+      </table>
+    </f:if>
+  </body>
+</html>

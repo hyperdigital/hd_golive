@@ -1,0 +1,21 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+  <f:be.pageRenderer
+    includeJavaScriptModules="{0: '@hyperdigital/hd-golive/page-module.js'}"
+    addJsInlineLabels="{0: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pageModule.note', 1: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pageModule.status', 2: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pending', 3: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.pass', 4: 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:status.failed'}"
+  />
+  <f:be.pageRenderer
+    addInlineSettings="{hdgolivePageModule: {pageId: pageId, language: selectedLanguage}}"
+  />
+
+  <div class="mb-3" data-hdgolive-page-module data-page-id="{pageId}" data-language="{selectedLanguage}">
+    <table class="table table-sm mb-0">
+      <tbody data-hdgolive-page-body>
+        <tr>
+          <td class="text-muted">
+            <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pageModule.loading" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</html>

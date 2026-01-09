@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.0">
+  <file source-language="en" datatype="plaintext" original="messages" date="2025-01-01T00:00:00Z">
+    <header/>
+    <body>
+      <trans-unit id="mlang_tabs_tab">
+        <source>GO Live</source>
+      </trans-unit>
+      <trans-unit id="mlang_labels_tablabel">
+        <source>GO Live</source>
+      </trans-unit>
+      <trans-unit id="mlang_labels_tabdescr">
+        <source>GO Live checklist module</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
