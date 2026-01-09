@@ -138,6 +138,7 @@ class GoLiveController extends ActionController
                 break;
             }
         }
+        $activeSessionOwnerId = $activeSession !== null ? (int)($activeSession['cruser_id'] ?? 0) : 0;
 
         $pages = [];
         $statusByPage = [];
@@ -427,7 +428,6 @@ class GoLiveController extends ActionController
         }
 
         $activeSessionClosed = $activeSession !== null && (int)($activeSession['closed'] ?? 0) === 1;
-        $activeSessionOwnerId = $activeSession !== null ? (int)($activeSession['cruser_id'] ?? 0) : 0;
         $currentUserId = (int)($this->getBackendUser()->user['uid'] ?? 0);
         $activeSessionOwnerName = '';
         if ($canViewChecklist && $selectedSite !== null && $selectedSite !== '' && $activeSessionId > 0 && $rootPageId !== null && !$activeSessionClosed) {

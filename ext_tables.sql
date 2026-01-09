@@ -7,14 +7,12 @@ CREATE TABLE tx_hdgolive_session (
   deleted tinyint(4) unsigned DEFAULT '0' NOT NULL,
   hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
   title varchar(255) DEFAULT '' NOT NULL,
-  site_identifier varchar(255) DEFAULT '' NOT NULL,
   shared tinyint(4) unsigned DEFAULT '0' NOT NULL,
   closed tinyint(4) unsigned DEFAULT '0' NOT NULL,
   closed_time int(11) unsigned DEFAULT '0' NOT NULL,
   closed_by int(11) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid),
-  KEY site_identifier (site_identifier),
   KEY closed (closed)
 );
 
@@ -49,6 +47,7 @@ CREATE TABLE tx_hdgolive_checkitem (
   title varchar(255) DEFAULT '' NOT NULL,
   item_key varchar(128) DEFAULT '' NOT NULL,
   description text,
+  site_identifier varchar(255) DEFAULT '' NOT NULL,
   sorting int(11) unsigned DEFAULT '0' NOT NULL,
   PRIMARY KEY (uid),
   KEY parent (pid),
