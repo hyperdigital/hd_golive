@@ -55,6 +55,19 @@
       .notes div {
         margin-bottom: 4px;
       }
+      .notes-row td {
+        font-size: 10px;
+        color: #555;
+        padding-left: 18px;
+      }
+      .notes-row .notes-label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 4px;
+      }
+      .notes-row .notes-list div {
+        margin-bottom: 4px;
+      }
       .flag {
         display: inline-block;
         margin-right: 6px;
@@ -101,19 +114,26 @@
                 </f:if>
               </td>
               <td class="notes">
-                <f:if condition="{includeNotes}">
-                  <f:then>
-                    <f:if condition="{item.notes}">
-                      <f:then>
-                        <f:for each="{item.notes}" as="note">
-                          <div>{note.status}: {note.text}</div>
-                        </f:for>
-                      </f:then>
-                    </f:if>
-                  </f:then>
-                </f:if>
               </td>
             </tr>
+            <f:if condition="{includeNotes}">
+              <f:then>
+                <f:if condition="{item.notes}">
+                  <f:then>
+                    <tr class="notes-row">
+                      <td colspan="5">
+                        <div class="notes-label">Notes</div>
+                        <div class="notes-list">
+                          <f:for each="{item.notes}" as="note">
+                            <div>{note.status}: {note.text}</div>
+                          </f:for>
+                        </div>
+                      </td>
+                    </tr>
+                  </f:then>
+                </f:if>
+              </f:then>
+            </f:if>
           </f:for>
         </tbody>
       </table>
@@ -149,19 +169,26 @@
                 </f:if>
               </td>
               <td class="notes">
-                <f:if condition="{includeNotes}">
-                  <f:then>
-                    <f:if condition="{page.notes}">
-                      <f:then>
-                        <f:for each="{page.notes}" as="note">
-                          <div>{note.status}: {note.text}</div>
-                        </f:for>
-                      </f:then>
-                    </f:if>
-                  </f:then>
-                </f:if>
               </td>
             </tr>
+            <f:if condition="{includeNotes}">
+              <f:then>
+                <f:if condition="{page.notes}">
+                  <f:then>
+                    <tr class="notes-row">
+                      <td colspan="6">
+                        <div class="notes-label">Notes</div>
+                        <div class="notes-list">
+                          <f:for each="{page.notes}" as="note">
+                            <div>{note.status}: {note.text}</div>
+                          </f:for>
+                        </div>
+                      </td>
+                    </tr>
+                  </f:then>
+                </f:if>
+              </f:then>
+            </f:if>
           </f:for>
         </tbody>
       </table>

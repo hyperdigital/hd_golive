@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\ArrayParameterType;
+use Hyperdigital\HdGolive\Service\PageDoktypeFilter;
 
 final class PageModuleDataProvider
 {
@@ -20,6 +21,7 @@ final class PageModuleDataProvider
         private readonly ConnectionPool $connectionPool,
         private readonly SiteFinder $siteFinder,
         private readonly IconFactory $iconFactory,
+        private readonly PageDoktypeFilter $pageDoktypeFilter,
     ) {}
 
     /**
@@ -27,6 +29,11 @@ final class PageModuleDataProvider
      */
     public function resolveSessionForPage(int $pageId): ?array
     {
+        $pageRow = $this->getPageChecklistRow($pageId);
+        if ($pageRow === null || !$this->pageDoktypeFilter->includesPageRow($pageRow)) {
+            return null;
+        }
+
         try {
             $site = $this->siteFinder->getSiteByPageId($pageId);
         } catch (\Throwable) {
@@ -228,6 +235,23 @@ final class PageModuleDataProvider
         return $uid ? (int)$uid : 0;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function getPageChecklistRow(int $pageId): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('doktype', 'tx_hdgolive_exclude_from_list', 'tx_hdgolive_include_in_list')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageId, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        return $row ?: null;
+    }
+
     private function getBasePageId(int $pageId): int
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
@@ -349,9 +373,6 @@ final class PageModuleDataProvider
             $pagecheckId = (int)$row['pagecheck'];
             if (!isset($notesByCheck[$pagecheckId])) {
                 $notesByCheck[$pagecheckId] = [];
-            }
-            if (count($notesByCheck[$pagecheckId]) >= 2) {
-                continue;
             }
             $notesByCheck[$pagecheckId][] = [
                 'text' => trim((string)($row['note_text'] ?? '')),

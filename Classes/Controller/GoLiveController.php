@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hyperdigital\HdGolive\Controller;
 
 use Hyperdigital\HdGolive\Service\PageTreeService;
+use Hyperdigital\HdGolive\Service\PageDoktypeFilter;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -37,6 +38,7 @@ class GoLiveController extends ActionController
         private readonly SiteFinder $siteFinder,
         private readonly PageTreeService $pageTreeService,
         private readonly IconFactory $iconFactory,
+        private readonly PageDoktypeFilter $pageDoktypeFilter,
     ) {}
 
     public function listAction(?string $site = null, int $session = 0): ResponseInterface
@@ -1411,13 +1413,8 @@ class GoLiveController extends ActionController
             ->fetchAllAssociative();
 
         $notesByItemcheck = [];
-        $counts = [];
         foreach ($rows as $row) {
             $foreignId = (int)$row[$foreignField];
-            $counts[$foreignId] = $counts[$foreignId] ?? 0;
-            if ($counts[$foreignId] >= 2) {
-                continue;
-            }
             $status = (int)($row['note_status'] ?? 0);
             $label = $statusLabels[$status] ?? $statusLabels[0];
             $text = trim((string)($row['note_text'] ?? ''));
@@ -1426,7 +1423,6 @@ class GoLiveController extends ActionController
                 $text = substr($text, 0, 117) . '...';
             }
             $notesByItemcheck[$foreignId][] = sprintf('%s: %s', $label, $text);
-            $counts[$foreignId]++;
         }
 
         return $notesByItemcheck;
@@ -1533,7 +1529,10 @@ class GoLiveController extends ActionController
             }
         }
 
-        return $sorted;
+        return array_values(array_filter(
+            $sorted,
+            fn(array $page): bool => $this->pageDoktypeFilter->includesPageRow($page)
+        ));
     }
 
     /**
@@ -1549,17 +1548,32 @@ class GoLiveController extends ActionController
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $rows = $queryBuilder
-            ->select('uid', 'pid', 'title', 'nav_title', 'slug', 'doktype', 'hidden', 'module', 'content_from_pid', 'sys_language_uid', 'l10n_parent')
-            ->from('pages')
+            ->select(
+                't.uid',
+                't.pid',
+                't.title',
+                't.nav_title',
+                't.slug',
+                't.doktype',
+                't.hidden',
+                't.module',
+                't.content_from_pid',
+                't.sys_language_uid',
+                't.l10n_parent'
+            )
+            ->addSelect('p.tx_hdgolive_exclude_from_list AS tx_hdgolive_exclude_from_list')
+            ->addSelect('p.tx_hdgolive_include_in_list AS tx_hdgolive_include_in_list')
+            ->from('pages', 't')
+            ->leftJoin('t', 'pages', 'p', $queryBuilder->expr()->eq('t.l10n_parent', 'p.uid'))
             ->where(
                 $queryBuilder->expr()->in(
-                    'l10n_parent',
+                    't.l10n_parent',
                     $queryBuilder->createNamedParameter($pageIds, ArrayParameterType::INTEGER)
                 ),
-                $queryBuilder->expr()->gt('sys_language_uid', $queryBuilder->createNamedParameter(0, ParameterType::INTEGER))
+                $queryBuilder->expr()->gt('t.sys_language_uid', $queryBuilder->createNamedParameter(0, ParameterType::INTEGER))
             )
-            ->orderBy('l10n_parent', 'ASC')
-            ->addOrderBy('sys_language_uid', 'ASC')
+            ->orderBy('t.l10n_parent', 'ASC')
+            ->addOrderBy('t.sys_language_uid', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
 

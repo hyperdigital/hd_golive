@@ -18,6 +18,25 @@ function updateRow(row, status) {
   }
   row.classList.toggle('table-success', status === 1);
   row.classList.toggle('table-danger', status === 2);
+  const notesRow = findNotesRow(row);
+  if (notesRow) {
+    notesRow.classList.toggle('table-success', status === 1);
+    notesRow.classList.toggle('table-danger', status === 2);
+  }
+}
+
+function findNotesRow(row) {
+  let next = row ? row.nextElementSibling : null;
+  while (next) {
+    if (next.dataset?.hdgoliveNotesRow === '1') {
+      return next;
+    }
+    if (next.dataset?.hdgoliveStatus !== undefined) {
+      break;
+    }
+    next = next.nextElementSibling;
+  }
+  return null;
 }
 
 function updateCheckedInfo(container, status, checkedBy, checkedTime) {
@@ -145,6 +164,10 @@ function handleToggle(select, url, updateProgressCount = false) {
       const row = select.closest('tr');
       if (row) {
         row.dataset.hdgoliveStatus = String(result.status ?? status);
+        const notesRow = findNotesRow(row);
+        if (notesRow) {
+          notesRow.dataset.hdgoliveStatus = String(result.status ?? status);
+        }
         if (result.editUrl) {
           const editLink = row.querySelector('[data-hdgolive-edit-link]');
           if (editLink) {

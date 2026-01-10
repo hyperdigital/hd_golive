@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Doctrine\DBAL\ParameterType;
 use Hyperdigital\HdGolive\Domain\GoLiveStatus;
+use Hyperdigital\HdGolive\Service\PageDoktypeFilter;
 
 final class GoLivePageProvider extends AbstractProvider
 {
@@ -45,6 +46,7 @@ final class GoLivePageProvider extends AbstractProvider
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly SiteFinder $siteFinder,
+        private readonly PageDoktypeFilter $pageDoktypeFilter,
     ) {
         parent::__construct();
     }
@@ -73,6 +75,11 @@ final class GoLivePageProvider extends AbstractProvider
 
         $pageId = (int)$this->identifier;
         if ($pageId <= 0) {
+            return false;
+        }
+
+        $pageRow = $this->getPageChecklistRow($pageId);
+        if ($pageRow === null || !$this->pageDoktypeFilter->includesPageRow($pageRow)) {
             return false;
         }
 
@@ -144,6 +151,23 @@ final class GoLivePageProvider extends AbstractProvider
             return GoLiveStatus::PASS;
         }
         return $status;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function getPageChecklistRow(int $pageId): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('doktype', 'tx_hdgolive_exclude_from_list', 'tx_hdgolive_include_in_list')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageId, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        return $row ?: null;
     }
 
     private function getBackendUser(): BackendUserAuthentication

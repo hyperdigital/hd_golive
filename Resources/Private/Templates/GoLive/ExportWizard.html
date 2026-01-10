@@ -25,19 +25,19 @@
         <f:form.hidden name="session" value="{activeSession.uid}" />
 
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="includePages" id="hdgolive-export-pages" value="1" checked />
+            <f:form.checkbox name="includePages" value="1" checked="checked" id="hdgolive-export-pages" class="form-check-input" />
             <label class="form-check-label" for="hdgolive-export-pages">
                 <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:export.include.pages" />
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="includeItems" id="hdgolive-export-items" value="1" checked />
+            <f:form.checkbox name="includeItems" value="1" checked="checked" id="hdgolive-export-items" class="form-check-input" />
             <label class="form-check-label" for="hdgolive-export-items">
                 <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:export.include.items" />
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="includeNotes" id="hdgolive-export-notes" value="1" checked />
+            <f:form.checkbox name="includeNotes" value="1" checked="checked" id="hdgolive-export-notes" class="form-check-input" />
             <label class="form-check-label" for="hdgolive-export-notes">
                 <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:export.include.notes" />
             </label>

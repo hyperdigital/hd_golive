@@ -1,0 +1,2 @@
+# cat=basic; type=string; label=Include page doktypes in checklist (comma-separated). Leave empty to include all.
+includeDoktypes =

@@ -108,3 +108,8 @@ CREATE TABLE tx_hdgolive_pagenote (
   KEY parent (pid),
   KEY pagecheck (pagecheck)
 );
+
+CREATE TABLE pages (
+  tx_hdgolive_exclude_from_list tinyint(4) unsigned DEFAULT '0' NOT NULL,
+  tx_hdgolive_include_in_list tinyint(4) unsigned DEFAULT '0' NOT NULL
+);

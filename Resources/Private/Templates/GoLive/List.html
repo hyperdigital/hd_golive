@@ -218,18 +218,18 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="small text-muted">
-                                            <f:if condition="{item.notesPreview}">
-                                                <f:then>
-                                                    <f:for each="{item.notesPreview}" as="note">
-                                                        <div>{note}</div>
-                                                    </f:for>
-                                                </f:then>
-                                                <f:else>
+                                        <f:if condition="{item.notesPreview}">
+                                            <f:then>
+                                                <div class="small text-muted">
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes" />:
+                                                </div>
+                                            </f:then>
+                                            <f:else>
+                                                <div class="small text-muted">
                                                     <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes.empty" />
-                                                </f:else>
-                                            </f:if>
-                                        </div>
+                                                </div>
+                                            </f:else>
+                                        </f:if>
                                         <f:if condition="{item.editUrl}">
                                             <a class="btn btn-default btn-sm mt-1" href="{item.editUrl}" data-hdgolive-edit-link>
                                                 <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes.edit" />
@@ -245,6 +245,20 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <f:if condition="{item.notesPreview}">
+                                    <tr class="{item.statusClass} hdgolive-notes-row" data-hdgolive-status="{item.status}" data-hdgolive-notes-row="1">
+                                        <td colspan="5" style="padding-left: 1.5rem;">
+                                            <div class="small text-muted" style="border-left: 3px solid #cfd6e0; padding-left: 0.75rem;">
+                                                <div style="font-weight: 600;">
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:items.notes" />
+                                                </div>
+                                                <f:for each="{item.notesPreview}" as="note">
+                                                    <div>{note}</div>
+                                                </f:for>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </f:if>
                             </f:for>
                         </tbody>
                     </table>
@@ -323,18 +337,18 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="small text-muted">
-                                            <f:if condition="{page.notesPreview}">
-                                                <f:then>
-                                                    <f:for each="{page.notesPreview}" as="note">
-                                                        <div>{note}</div>
-                                                    </f:for>
-                                                </f:then>
-                                                <f:else>
+                                        <f:if condition="{page.notesPreview}">
+                                            <f:then>
+                                                <div class="small text-muted">
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes" />:
+                                                </div>
+                                            </f:then>
+                                            <f:else>
+                                                <div class="small text-muted">
                                                     <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes.empty" />
-                                                </f:else>
-                                            </f:if>
-                                        </div>
+                                                </div>
+                                            </f:else>
+                                        </f:if>
                                         <f:if condition="{page.editUrl}">
                                             <a class="btn btn-default btn-sm mt-1" href="{page.editUrl}" data-hdgolive-edit-link>
                                                 <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes.edit" />
@@ -350,6 +364,20 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <f:if condition="{page.notesPreview}">
+                                    <tr class="{page.statusClass} hdgolive-notes-row" data-hdgolive-status="{page.status}" data-hdgolive-language="{page.sys_language_uid}" data-hdgolive-root="{f:if(condition: page.depth == 0, then: '1', else: '0')}" data-hdgolive-notes-row="1">
+                                        <td colspan="6" style="padding-left: 1.5rem;">
+                                            <div class="small text-muted" style="border-left: 3px solid #cfd6e0; padding-left: 0.75rem;">
+                                                <div style="font-weight: 600;">
+                                                    <f:translate key="LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:pages.notes" />
+                                                </div>
+                                                <f:for each="{page.notesPreview}" as="note">
+                                                    <div>{note}</div>
+                                                </f:for>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </f:if>
                             </f:for>
                         </tbody>
                     </table>

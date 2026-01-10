@@ -105,6 +105,12 @@
       <trans-unit id="tx_hdgolive_note.status.denied">
         <source>Denied</source>
       </trans-unit>
+      <trans-unit id="pages.tx_hdgolive_exclude_from_list">
+        <source>Exclude from GO Live checklist</source>
+      </trans-unit>
+      <trans-unit id="pages.tx_hdgolive_include_in_list">
+        <source>Include in GO Live checklist</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
