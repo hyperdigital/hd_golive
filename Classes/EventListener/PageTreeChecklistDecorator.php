@@ -138,7 +138,7 @@ final class PageTreeChecklistDecorator
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $rows = $queryBuilder
-            ->select('uid', 'doktype', 'tx_hdgolive_exclude_from_list', 'tx_hdgolive_include_in_list')
+            ->select('uid', 'doktype', 'sys_language_uid', 'tx_hdgolive_exclude_from_list', 'tx_hdgolive_include_in_list')
             ->from('pages')
             ->where(
                 $queryBuilder->expr()->in(
@@ -151,6 +151,9 @@ final class PageTreeChecklistDecorator
 
         $included = [];
         foreach ($rows as $row) {
+            if ((int)($row['sys_language_uid'] ?? 0) !== 0) {
+                continue;
+            }
             if ($this->pageDoktypeFilter->includesPageRow($row)) {
                 $included[] = (int)$row['uid'];
             }

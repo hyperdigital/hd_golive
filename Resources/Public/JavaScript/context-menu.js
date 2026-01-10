@@ -31,6 +31,36 @@ class GoLiveContextMenu {
         Notification.error('GO Live', 'Failed to update checklist.');
       });
   }
+
+  static setGoLivePageInclusion(_table, uid, data) {
+    const session = parseInt(data.session ?? '0', 10);
+    const page = parseInt(uid, 10);
+    const action = String(data.action ?? '');
+
+    if (!session || !page || (action !== 'include' && action !== 'exclude')) {
+      Notification.error('GO Live', 'Missing session, page, or action.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('session', String(session));
+    formData.append('page', String(page));
+    formData.append('action', action);
+
+    new AjaxRequest(TYPO3.settings.ajaxUrls.hd_golive_toggle_page_inclusion)
+      .post(formData)
+      .then(async (response) => {
+        const result = await response.resolve();
+        if (result?.success) {
+          document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+        } else {
+          Notification.error('GO Live', result?.message || 'Failed to update checklist.');
+        }
+      })
+      .catch(() => {
+        Notification.error('GO Live', 'Failed to update checklist.');
+      });
+  }
 }
 
 export default GoLiveContextMenu;

@@ -28,6 +28,8 @@ Pages
 
 * Page status is tracked per session.
 * The page tree shows colored "GO Live" labels when a session is active.
+* Use the page properties "Include in GO Live checklist" or "Exclude from GO Live checklist"
+  (default-language pages only) to override the doktype filter.
 
 Export
 ------

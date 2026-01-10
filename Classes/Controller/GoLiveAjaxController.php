@@ -199,6 +199,77 @@ final class GoLiveAjaxController
         ]);
     }
 
+    public function togglePageInclusion(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!$this->canViewChecklist()) {
+            return new JsonResponse(['success' => false, 'message' => 'Checklist view not enabled for your user group.']);
+        }
+
+        $data = $request->getParsedBody() ?? [];
+        $sessionId = (int)($data['session'] ?? 0);
+        $pageId = (int)($data['page'] ?? 0);
+        $action = (string)($data['action'] ?? '');
+
+        if ($sessionId <= 0 || $pageId <= 0 || !in_array($action, ['include', 'exclude'], true)) {
+            return new JsonResponse(['success' => false, 'message' => 'Missing session, page, or action.']);
+        }
+
+        $state = $this->getBackendUser()->getSessionData('hd_golive');
+        if (!is_array($state) || (int)($state['session'] ?? 0) !== $sessionId) {
+            return new JsonResponse(['success' => false, 'message' => 'No active checklist session.']);
+        }
+
+        $siteIdentifier = (string)($state['site'] ?? '');
+        if ($siteIdentifier === '') {
+            return new JsonResponse(['success' => false, 'message' => 'No active site.']);
+        }
+
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pageId);
+        } catch (\Throwable) {
+            return new JsonResponse(['success' => false, 'message' => 'Page not in a site.']);
+        }
+
+        if ($site->getIdentifier() !== $siteIdentifier) {
+            return new JsonResponse(['success' => false, 'message' => 'Page not in active site.']);
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $row = $queryBuilder
+            ->select('uid', 'sys_language_uid')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageId, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        if (!$row) {
+            return new JsonResponse(['success' => false, 'message' => 'Page not found.']);
+        }
+        if ((int)($row['sys_language_uid'] ?? 0) !== 0) {
+            return new JsonResponse(['success' => false, 'message' => 'Only default language pages can be updated.']);
+        }
+
+        $connection = $this->connectionPool->getConnectionForTable('pages');
+        if ($action === 'include') {
+            $connection->update('pages', [
+                'tx_hdgolive_include_in_list' => 1,
+                'tx_hdgolive_exclude_from_list' => 0,
+            ], [
+                'uid' => (int)$row['uid'],
+            ]);
+        } else {
+            $connection->update('pages', [
+                'tx_hdgolive_include_in_list' => 0,
+                'tx_hdgolive_exclude_from_list' => 1,
+            ], [
+                'uid' => (int)$row['uid'],
+            ]);
+        }
+
+        return new JsonResponse(['success' => true]);
+    }
+
     public function toggleItemModule(ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->canViewChecklist()) {

@@ -7,6 +7,10 @@ return [
         'path' => '/hdgolive/toggle-page',
         'target' => GoLiveAjaxController::class . '::togglePage',
     ],
+    'hd_golive_toggle_page_inclusion' => [
+        'path' => '/hdgolive/toggle-page-inclusion',
+        'target' => GoLiveAjaxController::class . '::togglePageInclusion',
+    ],
     'hd_golive_toggle_page_module' => [
         'path' => '/hdgolive/module/toggle-page',
         'target' => GoLiveAjaxController::class . '::togglePageModule',

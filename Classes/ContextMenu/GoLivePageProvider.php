@@ -37,11 +37,26 @@ final class GoLivePageProvider extends AbstractProvider
             'iconIdentifier' => 'actions-close',
             'callbackAction' => 'setGoLivePageStatus',
         ],
+        'hdgolive_list_include' => [
+            'label' => 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:contextmenu.list.include',
+            'iconIdentifier' => 'actions-add',
+            'callbackAction' => 'setGoLivePageInclusion',
+        ],
+        'hdgolive_list_exclude' => [
+            'label' => 'LLL:EXT:hd_golive/Resources/Private/Language/locallang.xlf:contextmenu.list.exclude',
+            'iconIdentifier' => 'actions-remove',
+            'callbackAction' => 'setGoLivePageInclusion',
+        ],
     ];
 
     private int $sessionId = 0;
     private string $siteIdentifier = '';
     private int $status = GoLiveStatus::PENDING;
+    private bool $isIncludedInList = false;
+    /**
+     * @var array<string, mixed>
+     */
+    private array $pageRow = [];
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
@@ -79,9 +94,14 @@ final class GoLivePageProvider extends AbstractProvider
         }
 
         $pageRow = $this->getPageChecklistRow($pageId);
-        if ($pageRow === null || !$this->pageDoktypeFilter->includesPageRow($pageRow)) {
+        if ($pageRow === null) {
             return false;
         }
+        if ((int)($pageRow['sys_language_uid'] ?? 0) !== 0) {
+            return false;
+        }
+        $this->pageRow = $pageRow;
+        $this->isIncludedInList = $this->pageDoktypeFilter->includesPageRow($pageRow);
 
         try {
             $site = $this->siteFinder->getSiteByPageId($pageId);
@@ -103,16 +123,46 @@ final class GoLivePageProvider extends AbstractProvider
             return $items;
         }
 
-        $this->itemsConfiguration['hdgolive_status_pending']['disabled'] = $this->status === GoLiveStatus::PENDING;
-        $this->itemsConfiguration['hdgolive_status_pass']['disabled'] = $this->status === GoLiveStatus::PASS;
-        $this->itemsConfiguration['hdgolive_status_failed']['disabled'] = $this->status === GoLiveStatus::FAILED;
+        $originalConfiguration = $this->itemsConfiguration;
+        $itemsConfiguration = $this->itemsConfiguration;
 
-        return parent::addItems($items);
+        if (!$this->isIncludedInList) {
+            unset(
+                $itemsConfiguration['hdgolive_status_pending'],
+                $itemsConfiguration['hdgolive_status_pass'],
+                $itemsConfiguration['hdgolive_status_failed']
+            );
+        } else {
+            $itemsConfiguration['hdgolive_status_pending']['disabled'] = $this->status === GoLiveStatus::PENDING;
+            $itemsConfiguration['hdgolive_status_pass']['disabled'] = $this->status === GoLiveStatus::PASS;
+            $itemsConfiguration['hdgolive_status_failed']['disabled'] = $this->status === GoLiveStatus::FAILED;
+        }
+
+        if ($this->isIncludedInList) {
+            unset($itemsConfiguration['hdgolive_list_include']);
+        } else {
+            unset($itemsConfiguration['hdgolive_list_exclude']);
+        }
+
+        $this->itemsConfiguration = $itemsConfiguration;
+        $items = parent::addItems($items);
+        $this->itemsConfiguration = $originalConfiguration;
+
+        return $items;
     }
 
     protected function getAdditionalAttributes(string $itemName): array
     {
         if (!str_starts_with($itemName, 'hdgolive_status_')) {
+            if ($itemName === 'hdgolive_list_include' || $itemName === 'hdgolive_list_exclude') {
+                $action = $itemName === 'hdgolive_list_include' ? 'include' : 'exclude';
+                return [
+                    'data-callback-module' => '@hyperdigital/hd-golive/context-menu',
+                    'data-session' => (string)$this->sessionId,
+                    'data-site' => $this->siteIdentifier,
+                    'data-action' => $action,
+                ];
+            }
             return [];
         }
         $status = match ($itemName) {
@@ -161,7 +211,7 @@ final class GoLivePageProvider extends AbstractProvider
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $row = $queryBuilder
-            ->select('doktype', 'tx_hdgolive_exclude_from_list', 'tx_hdgolive_include_in_list')
+            ->select('doktype', 'sys_language_uid', 'tx_hdgolive_exclude_from_list', 'tx_hdgolive_include_in_list')
             ->from('pages')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($pageId, ParameterType::INTEGER)))
             ->executeQuery()
